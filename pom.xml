@@ -15,13 +15,61 @@
     <description>Repeat lending exists assets in FTX with earned interests back to lending pool every hour. In short,
         compound lending interest back to the lending.
     </description>
+
     <properties>
         <java.version>1.8</java.version>
+        <app-library>${project.basedir}/src/main/lib</app-library>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- FTX client, we use io.contek libraries for that. -->
+        <dependency>
+            <groupId>io.contek.invoker</groupId>
+            <artifactId>invoker-ftx-api</artifactId>
+            <version>2.15.36-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${app-library}/ftx-api-2.15.36-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>io.contek.invoker</groupId>
+            <artifactId>invoker-security</artifactId>
+            <version>2.15.36-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${app-library}/commons-2.15.36-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>io.contek.invoker</groupId>
+            <artifactId>invoker-commons</artifactId>
+            <version>2.15.36-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${app-library}/security-2.15.36-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <!-- Used by io.contek libraries dependencies. -->
+        <dependency>
+            <groupId>io.contek.ursa</groupId>
+            <artifactId>ursa-cache</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.0.1-jre</version>
         </dependency>
 
         <dependency>
