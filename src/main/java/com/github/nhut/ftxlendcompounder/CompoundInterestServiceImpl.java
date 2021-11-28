@@ -33,10 +33,10 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
     }
 
     public void reLendAgainWithEarnedInterests() {
-        log.info("Check current lending...");
+        log.debug("Check current lending...");
         final GetLendingInfo lendingInfo = spotMarginApi.getLendingInfo();
         final GetLendingInfo.Response lendingInfoResponse = lendingInfo.submit();
-        log.info("Current lending:\n{}", lendingInfoResponse);
+        log.debug("Current lending:\n{}", lendingInfoResponse);
 
         for (LendingInfo currentLendingInfo : lendingInfoResponse.result) {
             if (currentLendingInfo.lendable < 0.000001) {
@@ -52,9 +52,9 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
             try {
                 final PostLendingOffer.Response submit = postLendingOffer.submit();
                 if (Boolean.TRUE.equals(submit.success)) {
-                    log.info("Lending success. Result: {}", submit.result);
+                    log.info("Lending {} success. Result: {}", newLendingOffer.coin, submit.result);
                 } else {
-                    log.error("Lending FAILED. Result: {}", submit.result);
+                    log.error("Lending {} FAILED. Result: {}", newLendingOffer.coin, submit.result);
                 }
 
             } catch (Exception e) {
