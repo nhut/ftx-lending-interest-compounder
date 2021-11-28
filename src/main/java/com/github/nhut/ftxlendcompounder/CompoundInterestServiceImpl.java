@@ -39,7 +39,7 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         log.debug("Current lending:\n{}", lendingInfoResponse);
 
         for (LendingInfo currentLendingInfo : lendingInfoResponse.result) {
-            if (currentLendingInfo.lendable < 0.000001) {
+            if (currentLendingInfo.offered <= 0 || currentLendingInfo.lendable < 0.000001) {
                 log.debug("Skipping {}... {} is too low for lending.", currentLendingInfo.coin, currentLendingInfo.lendable);
                 return;
             }
