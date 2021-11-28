@@ -13,15 +13,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Service
 public class CompoundInterestServiceImpl implements CompoundInterestService {
 
     private final SpotMarginApi spotMarginApi;
+    private final List<String> coinsToExclude;
 
     public CompoundInterestServiceImpl(@Value("${app.ftx.api.key}") final String apiKey,
-                                       @Value("${app.ftx.api.secret}") final String apiSecret) {
+                                       @Value("${app.ftx.api.secret}") final String apiSecret,
+                                       @Value("${app.ftx.lending.exclude.coins}") final List<String> coinsToExclude) {
         if (!StringUtils.hasLength(apiKey)) {
             throw new IllegalArgumentException("Required app.ftx.api.key value is missing!");
         }
@@ -30,12 +34,12 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         }
         final ApiKey apiKeyData = ApiKey.newBuilder().setId(apiKey).setSecret(apiSecret).build();
         this.spotMarginApi = ApiFactory.getMainNet().rest().spotMargin(apiKeyData);
+        this.coinsToExclude = coinsToExclude != null ? coinsToExclude : Collections.emptyList();
     }
 
     public void reLendAgainWithEarnedInterests() {
-        log.debug("Check current lending...");
-        final GetLendingInfo lendingInfo = spotMarginApi.getLendingInfo();
-        final GetLendingInfo.Response lendingInfoResponse = lendingInfo.submit();
+        log.debug("Checking current lending...");
+        final GetLendingInfo.Response lendingInfoResponse = spotMarginApi.getLendingInfo().submit();
         if (Boolean.FALSE.equals(lendingInfoResponse.success)) {
             log.error("Failed to get lending info. {}", lendingInfoResponse.result);
             return;
@@ -43,7 +47,7 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         log.debug("Current lending:\n{}", lendingInfoResponse);
 
         for (LendingInfo currentLendingInfo : lendingInfoResponse.result) {
-            if (currentLendingInfo.offered <= 0) {
+            if (coinsToExclude.contains(currentLendingInfo.coin) || currentLendingInfo.offered <= 0) {
                 continue;
             }
             if (currentLendingInfo.lendable <= 0.000001) {

@@ -14,6 +14,11 @@
       "name": "app.ftx.api.secret",
       "type": "java.lang.String",
       "description": "FTX API key"
+    },
+    {
+      "name": "app.ftx.lending.exclude.coins",
+      "type": "java.lang.String",
+      "description": "Coin to exclude from the lending. Use comma to separate coins e.g. FTT,SOL"
     }
   ]
 }
