@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "app.ftx.api.key",
+      "type": "java.lang.String",
+      "description": "FTX API key"
+  }
+] }
