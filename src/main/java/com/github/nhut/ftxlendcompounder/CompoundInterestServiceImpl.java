@@ -36,31 +36,41 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         log.debug("Check current lending...");
         final GetLendingInfo lendingInfo = spotMarginApi.getLendingInfo();
         final GetLendingInfo.Response lendingInfoResponse = lendingInfo.submit();
+        if (Boolean.FALSE.equals(lendingInfoResponse.success)) {
+            log.error("Failed to get lending info. {}", lendingInfoResponse.result);
+            return;
+        }
         log.debug("Current lending:\n{}", lendingInfoResponse);
 
         for (LendingInfo currentLendingInfo : lendingInfoResponse.result) {
-            if (currentLendingInfo.offered <= 0 || currentLendingInfo.lendable < 0.000001) {
+            if (currentLendingInfo.offered <= 0) {
+                continue;
+            }
+            if (currentLendingInfo.lendable <= 0.000001) {
                 log.debug("Skipping {}... {} is too low for lending.", currentLendingInfo.coin, currentLendingInfo.lendable);
-                return;
+                continue;
+            }
+            sendNewLendingOfferToFtx(currentLendingInfo);
+        }
+    }
+
+    private void sendNewLendingOfferToFtx(final LendingInfo currentLendingInfo) {
+        final LendingOffer newLendingOffer = new LendingOffer();
+        newLendingOffer.coin = currentLendingInfo.coin;
+        newLendingOffer.rate = currentLendingInfo.minRate;
+        newLendingOffer.size = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(5, BigDecimal.ROUND_DOWN).doubleValue();
+        final PostLendingOffer postLendingOffer = spotMarginApi.postLendingOffer(newLendingOffer);
+        try {
+            final PostLendingOffer.Response submit = postLendingOffer.submit();
+            if (Boolean.TRUE.equals(submit.success)) {
+                log.info("Lending {} success. Result: {}", newLendingOffer.coin, submit.result);
+            } else {
+                log.error("Lending {} FAILED. Result: {}", newLendingOffer.coin, submit.result);
             }
 
-            final LendingOffer newLendingOffer = new LendingOffer();
-            newLendingOffer.coin = currentLendingInfo.coin;
-            newLendingOffer.rate = currentLendingInfo.minRate;
-            newLendingOffer.size = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(5, BigDecimal.ROUND_DOWN).doubleValue();
-            final PostLendingOffer postLendingOffer = spotMarginApi.postLendingOffer(newLendingOffer);
-            try {
-                final PostLendingOffer.Response submit = postLendingOffer.submit();
-                if (Boolean.TRUE.equals(submit.success)) {
-                    log.info("Lending {} success. Result: {}", newLendingOffer.coin, submit.result);
-                } else {
-                    log.error("Lending {} FAILED. Result: {}", newLendingOffer.coin, submit.result);
-                }
-
-            } catch (Exception e) {
-                log.error("Fetch to lend {} with size of {}.", newLendingOffer.coin, newLendingOffer.size, e);
-                throw e;
-            }
+        } catch (Exception e) {
+            log.error("Fetch to lend {} with size of {}.", newLendingOffer.coin, newLendingOffer.size, e);
+            throw e;
         }
     }
 }
