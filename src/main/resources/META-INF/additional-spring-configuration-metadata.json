@@ -1,8 +1,19 @@
 {
   "properties": [
     {
+      "name": "app.ftx.startup.call-compound-interest",
+      "type": "java.lang.String",
+      "description": "Should it call FTX compound interest service to do relending at startup or not."
+    },
+    {
       "name": "app.ftx.api.key",
       "type": "java.lang.String",
       "description": "FTX API key"
-  }
-] }
+    },
+    {
+      "name": "app.ftx.api.secret",
+      "type": "java.lang.String",
+      "description": "FTX API key"
+    }
+  ]
+}
