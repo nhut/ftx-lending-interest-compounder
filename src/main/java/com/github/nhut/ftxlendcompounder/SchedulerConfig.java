@@ -2,7 +2,6 @@ package com.github.nhut.ftxlendcompounder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,10 +11,9 @@ import javax.annotation.PostConstruct;
 
 @Configuration
 @EnableScheduling
-@ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 public class SchedulerConfig {
 
-    private boolean callCompoundInterestSchedulerAtStartup = false;
+    private boolean callCompoundInterestSchedulerAtStartup;
 
     private final CompoundInterestService compoundInterestService;
 
