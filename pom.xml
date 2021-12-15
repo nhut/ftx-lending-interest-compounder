@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.0</version>
+        <version>2.6.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.nhut</groupId>
@@ -18,7 +18,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <app-library>${pom.basedir}/src/main/lib</app-library>
+        <app-library>${project.basedir}/src/main/lib</app-library>
     </properties>
 
     <dependencies>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.9.2</version>
+            <version>4.9.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
