@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.github.nhut</groupId>
     <artifactId>ftx-lending-interest-compounder</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <name>ftx-lending-interest-compounder</name>
     <description>Repeat lending exists assets in FTX with earned interests back to lending pool every hour. In short,
         compound lending interest back to the lending.
