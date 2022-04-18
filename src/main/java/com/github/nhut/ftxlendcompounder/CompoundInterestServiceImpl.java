@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class CompoundInterestServiceImpl implements CompoundInterestService {
 
-    private static final int FTX_OFFERED_VALUE_DECIMALS_RETURNED = 5;
+    private static final int FTX_OFFERED_LENDABLE_VALUE_DECIMALS = 5;
 
     private final SpotMarginApi spotMarginApi;
     private final List<String> coinsToExclude;
@@ -52,8 +52,8 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
             if (coinsToExclude.contains(currentLendingInfo.coin) || currentLendingInfo.offered <= 0) {
                 continue;
             }
-            final BigDecimal offered = BigDecimal.valueOf(currentLendingInfo.offered).setScale(FTX_OFFERED_VALUE_DECIMALS_RETURNED, RoundingMode.FLOOR);
-            final BigDecimal lendable = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(FTX_OFFERED_VALUE_DECIMALS_RETURNED, RoundingMode.FLOOR);
+            final BigDecimal offered = BigDecimal.valueOf(currentLendingInfo.offered).setScale(FTX_OFFERED_LENDABLE_VALUE_DECIMALS, RoundingMode.FLOOR);
+            final BigDecimal lendable = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(FTX_OFFERED_LENDABLE_VALUE_DECIMALS, RoundingMode.FLOOR);
             final boolean isLendingAmountIsUnchanged = offered.compareTo(lendable) == 0;
             if (isLendingAmountIsUnchanged) {
                 continue;
@@ -66,7 +66,8 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         final LendingOffer newLendingOffer = new LendingOffer();
         newLendingOffer.coin = currentLendingInfo.coin;
         newLendingOffer.rate = currentLendingInfo.minRate;
-        newLendingOffer.size = currentLendingInfo.lendable;
+        newLendingOffer.size = BigDecimal.valueOf(currentLendingInfo.lendable)
+                .setScale(FTX_OFFERED_LENDABLE_VALUE_DECIMALS, RoundingMode.FLOOR).doubleValue();
         final PostLendingOffer postLendingOffer = spotMarginApi.postLendingOffer(newLendingOffer);
         try {
             final PostLendingOffer.Response submit = postLendingOffer.submit();
