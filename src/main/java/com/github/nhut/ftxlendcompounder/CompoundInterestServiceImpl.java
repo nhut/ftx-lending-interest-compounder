@@ -13,12 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Service
 public class CompoundInterestServiceImpl implements CompoundInterestService {
+
+    private static final int FTX_OFFERED_VALUE_DECIMALS_RETURNED = 5;
 
     private final SpotMarginApi spotMarginApi;
     private final List<String> coinsToExclude;
@@ -44,14 +47,15 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
             log.error("Failed to get lending info. {}", lendingInfoResponse.result);
             return;
         }
-        log.debug("Current lending:\n{}", lendingInfoResponse);
 
         for (LendingInfo currentLendingInfo : lendingInfoResponse.result) {
             if (coinsToExclude.contains(currentLendingInfo.coin) || currentLendingInfo.offered <= 0) {
                 continue;
             }
-            if (currentLendingInfo.lendable <= 0.000001) {
-                log.debug("Skipping {}... {} is too low for lending.", currentLendingInfo.coin, currentLendingInfo.lendable);
+            final BigDecimal offered = BigDecimal.valueOf(currentLendingInfo.offered).setScale(FTX_OFFERED_VALUE_DECIMALS_RETURNED, RoundingMode.FLOOR);
+            final BigDecimal lendable = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(FTX_OFFERED_VALUE_DECIMALS_RETURNED, RoundingMode.FLOOR);
+            final boolean isLendingAmountIsUnchanged = offered.compareTo(lendable) == 0;
+            if (isLendingAmountIsUnchanged) {
                 continue;
             }
             sendNewLendingOfferToFtx(currentLendingInfo);
@@ -62,7 +66,7 @@ public class CompoundInterestServiceImpl implements CompoundInterestService {
         final LendingOffer newLendingOffer = new LendingOffer();
         newLendingOffer.coin = currentLendingInfo.coin;
         newLendingOffer.rate = currentLendingInfo.minRate;
-        newLendingOffer.size = BigDecimal.valueOf(currentLendingInfo.lendable).setScale(5, BigDecimal.ROUND_DOWN).doubleValue();
+        newLendingOffer.size = currentLendingInfo.lendable;
         final PostLendingOffer postLendingOffer = spotMarginApi.postLendingOffer(newLendingOffer);
         try {
             final PostLendingOffer.Response submit = postLendingOffer.submit();
