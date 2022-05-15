@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class CompoundInterestServiceImpl implements CompoundInterestService {
 
-    private static final int FTX_OFFERED_LENDABLE_VALUE_DECIMALS = 5;
+    private static final int FTX_OFFERED_LENDABLE_VALUE_DECIMALS = 4; //5 is also possible but sometimes have some issues with FTX.
 
     private final SpotMarginApi spotMarginApi;
     private final List<String> coinsToExclude;
