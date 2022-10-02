@@ -93,11 +93,13 @@
                 </excludes>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <includeSystemScope>true</includeSystemScope>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -107,8 +109,12 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
                         <configuration>
-                            <mainClass>com.github.nhut.ftxlendcompounder.FtxLendCompounderApplication</mainClass>
+                            <classifier>exec</classifier>
                         </configuration>
                     </execution>
                 </executions>
