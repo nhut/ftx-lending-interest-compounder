@@ -2,6 +2,9 @@
 
 Repeat lending exists assets in FTX with earned interests back to lending pool every hour. In short, compound lending interest back to the lending.
 
+Requirements:
+* Java 17 LTS
+
 ## How to run
 For Windows:
 1. Copy run.cmd to myrun.cmd.
